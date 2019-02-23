@@ -4,7 +4,7 @@
  * ------------------------------------------------------------------------------------------ */
 
 import * as path from 'path';
-import { workspace, ExtensionContext } from 'vscode';
+import { workspace, ExtensionContext, TextDocument, Uri } from 'vscode';
 
 import {
 	LanguageClient,
@@ -51,7 +51,7 @@ export function activate (context: ExtensionContext) {
 		'Language Server Example',
 		serverOptions,
 		clientOptions
-	);
+  );
 
 	// Start the client. This will also launch the server
   client.start();
