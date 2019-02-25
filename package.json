@@ -50,10 +50,13 @@
 		"compile": "tsc -b",
 		"watch": "tsc -b -w",
 		"postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
-		"test": "sh ./scripts/e2e.sh"
+		"test": "jest"
 	},
 	"devDependencies": {
+		"@types/jest": "^24.0.6",
 		"@types/node": "^11.9.4",
+		"jest": "^24.1.0",
+		"ts-jest": "^24.0.0",
 		"tslint": "^5.12.1",
 		"tslint-config-semistandard": "^7.0.0",
 		"typescript": "^3.3.3333"
