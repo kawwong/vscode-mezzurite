@@ -27,17 +27,7 @@ const connection = createConnection(ProposedFeatures.all);
 // supports full document sync only
 const documents: TextDocuments = new TextDocuments();
 
-let hasConfigurationCapability: boolean = false;
-let hasWorkspaceFolderCapability: boolean = false;
-
-connection.onInitialize((params: InitializeParams) => {
-  const capabilities = params.capabilities;
-
-	// Does the client support the `workspace/configuration` request?
-	// If not, we will fall back using global settings
-  hasConfigurationCapability = !!(capabilities.workspace && !!capabilities.workspace.configuration);
-  hasWorkspaceFolderCapability = !!(capabilities.workspace && !!capabilities.workspace.workspaceFolders);
-
+connection.onInitialize(() => {
   return {
     capabilities: {
       textDocumentSync: documents.syncKind,
@@ -50,19 +40,6 @@ connection.onInitialize((params: InitializeParams) => {
 });
 
 connection.onInitialized(() => {
-  if (hasConfigurationCapability) {
-		// Register for all configuration changes.
-    connection.client.register(
-			DidChangeConfigurationNotification.type,
-			undefined
-		);
-  }
-  if (hasWorkspaceFolderCapability) {
-    connection.workspace.onDidChangeWorkspaceFolders(_event => {
-      connection.console.log('Workspace folder change event received.');
-    });
-  }
-
   connection.workspace.getWorkspaceFolders().then((folders: WorkspaceFolder[]) => {
     // TODO: Make this work for multiple folders.
     const files = extractSourceFiles(folders[0].uri);
@@ -84,84 +61,23 @@ connection.onInitialized(() => {
   });
 });
 
-// The example settings
-interface ExampleSettings {
-  maxNumberOfProblems: number;
-}
-
-// The global settings, used when the `workspace/configuration` request is not supported by the client.
-// Please note that this is not the case when using this server with the client provided in this example
-// but could happen with other clients.
-const defaultSettings: ExampleSettings = { maxNumberOfProblems: 1000 };
-
-// Cache the settings of all open documents
-const documentSettings: Map<string, Thenable<ExampleSettings>> = new Map();
-
-connection.onDidChangeConfiguration(change => {
-  if (hasConfigurationCapability) {
-		// Reset all cached document settings
-    documentSettings.clear();
-  }
-
-	// Revalidate all open text documents
-  documents.all().forEach(validateTextDocument);
-});
-
-function validateTextDocument (document: TextDocument): void {
-  connection.console.log(document.getText());
-}
+// connection.onDidChangeConfiguration(change => false);
 
 // Only keep settings for open documents
-documents.onDidClose(e => {
-  documentSettings.delete(e.document.uri);
-});
+// documents.onDidClose(e => false);
 
 // The content of a text document has changed. This event is emitted
 // when the text document first opened or when its content has changed.
-documents.onDidChangeContent(change => {
-  validateTextDocument(change.document);
-});
+// documents.onDidChangeContent(change => false);
 
-connection.onDidChangeWatchedFiles(_change => {
-	// Monitored files have change in VSCode
-  connection.console.log('We received an file change event');
-});
+// connection.onDidChangeWatchedFiles(_change => false);
 
 // This handler provides the initial list of the completion items.
-connection.onCompletion(
-	(_textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
-		// The pass parameter contains the position of the text document in
-		// which code complete got requested. For the example we ignore this
-		// info and always provide the same completion items.
-  return [
-    {
-      label: 'TypeScript',
-      kind: CompletionItemKind.Text,
-      data: 1
-    },
-    {
-      label: 'JavaScript',
-      kind: CompletionItemKind.Text,
-      data: 2
-    }
-  ];
-}
-);
+// connection.onCompletion();
 
 // This handler resolves additional information for the item selected in
 // the completion list.
-connection.onCompletionResolve(
-	(item: CompletionItem): CompletionItem => {
-  if (item.data === 1) {
-    (item.detail = 'TypeScript details'),
-				(item.documentation = 'TypeScript documentation');
-  } else if (item.data === 2) {
-    (item.detail = 'JavaScript details'),
-				(item.documentation = 'JavaScript documentation');
-  }
-  return item;
-}
-);
+// connection.onCompletionResolve();
 
 /*
 connection.onDidOpenTextDocument((params) => {
