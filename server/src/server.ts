@@ -6,18 +6,14 @@
 import {
 	createConnection,
 	TextDocuments,
-	TextDocument,
 	ProposedFeatures,
-	InitializeParams,
-	DidChangeConfigurationNotification,
-	CompletionItem,
-	CompletionItemKind,
-	TextDocumentPositionParams,
   WorkspaceFolder
 } from 'vscode-languageserver';
 import extractSourceFiles from './filesystem/extractSourceFiles';
-import findFramework from './find-framework';
 import processFiles from './filesystem/processFiles';
+import findFramework from './find-framework';
+import isInstrumented from './is-instrumented';
+import MezzuriteComponent from './models/mezzuriteComponent';
 
 // Create a connection for the server. The connection uses Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -43,7 +39,11 @@ connection.onInitialized(() => {
   connection.workspace.getWorkspaceFolders().then((folders: WorkspaceFolder[]) => {
     // TODO: Make this work for multiple folders.
     const files = extractSourceFiles(folders[0].uri);
-    const types = {
+    const types: {
+      angular: MezzuriteComponent[];
+      angularjs: MezzuriteComponent[];
+      react: MezzuriteComponent[];
+    } = {
       angular: [],
       angularjs: [],
       react: []
@@ -51,12 +51,12 @@ connection.onInitialized(() => {
     processFiles(files, (fileData: string, filePath: string) => {
       const framework = findFramework(fileData);
       if (framework != null) {
-        types[framework].push(filePath);
+        const component = isInstrumented(filePath, framework);
+        types[framework].push(component);
       }
     }).then(() => {
-      connection.console.log(types.angular.join(' '));
-      connection.console.log(types.angularjs.join(' '));
-      connection.console.log(types.react.join(' '));
+      connection.console.log(JSON.stringify(types.angular));
+      connection.console.log(JSON.stringify(types.react));
     });
   });
 });
