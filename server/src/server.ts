@@ -15,6 +15,9 @@ import {
 	TextDocumentPositionParams,
   WorkspaceFolder
 } from 'vscode-languageserver';
+import extractSourceFiles from './filesystem/extractSourceFiles';
+import findFramework from './find-framework';
+import processFiles from './filesystem/processFiles';
 
 // Create a connection for the server. The connection uses Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -61,8 +64,22 @@ connection.onInitialized(() => {
   }
 
   connection.workspace.getWorkspaceFolders().then((folders: WorkspaceFolder[]) => {
-    folders.forEach((folder: WorkspaceFolder) => {
-      connection.console.log(folder.uri);
+    // TODO: Make this work for multiple folders.
+    const files = extractSourceFiles(folders[0].uri);
+    const types = {
+      angular: [],
+      angularjs: [],
+      react: []
+    };
+    processFiles(files, (fileData: string, filePath: string) => {
+      const framework = findFramework(fileData);
+      if (framework != null) {
+        types[framework].push(filePath);
+      }
+    }).then(() => {
+      connection.console.log(types.angular.join(' '));
+      connection.console.log(types.angularjs.join(' '));
+      connection.console.log(types.react.join(' '));
     });
   });
 });
