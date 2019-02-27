@@ -4,13 +4,14 @@
  * ------------------------------------------------------------------------------------------ */
 
 import * as path from 'path';
-import { ExtensionContext } from 'vscode';
+import { ExtensionContext, window } from 'vscode';
 
 import {
 	LanguageClient,
 	ServerOptions,
 	TransportKind
 } from 'vscode-languageclient';
+import MezzuriteTreeView from './models/MezzuriteTreeView';
 
 let client: LanguageClient;
 
@@ -41,6 +42,10 @@ export function activate (context: ExtensionContext) {
 		serverOptions,
 		undefined
   );
+
+  const treeView = new MezzuriteTreeView([]);
+
+  window.registerTreeDataProvider('mezzuriteComponentList', treeView);
 
 	// Start the client. This will also launch the server
   client.start();
