@@ -13,6 +13,7 @@
 	},
 	"dependencies": {
 		"globby": "^9.0.0",
+		"ts-morph": "^1.2.0",
 		"vscode-languageserver": "^4.4.2"
 	},
 	"scripts": {},

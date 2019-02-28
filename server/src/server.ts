@@ -13,6 +13,7 @@ import extractSourceFiles from './filesystem/extractSourceFiles';
 import processFiles from './filesystem/processFiles';
 import MezzuriteComponent from './models/mezzuriteComponent';
 import getComponentType from './getComponentType';
+import generateComponent from './generateComponent';
 
 // Create a connection for the server. The connection uses Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -53,7 +54,7 @@ connection.onInitialized(() => {
     processFiles(files, (fileData: string, filePath: string) => {
       const componentType = getComponentType(fileData);
       if (componentType != null) {
-        components[componentType].push(filePath);
+        components[componentType].push(generateComponent(componentType, filePath));
       }
     }).then(() => {
       connection.console.log(JSON.stringify(components.ngComponent));
