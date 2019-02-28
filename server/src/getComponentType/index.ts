@@ -3,10 +3,10 @@ import helpers from './helpers';
 function getComponentType (fileContents: string): string {
   let componentType = null;
 
-  if (helpers.isAngularComponent(fileContents)) {
-    componentType = 'angularComponent';
-  } else if (helpers.isAngularModule(fileContents)) {
-    componentType = 'angularModule';
+  if (helpers.isNgComponent(fileContents)) {
+    componentType = 'ngComponent';
+  } else if (helpers.isNgModule(fileContents)) {
+    componentType = 'ngModule';
   } else if (helpers.isReact(fileContents)) {
     componentType = 'react';
   }

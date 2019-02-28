@@ -1,15 +1,15 @@
-import isAngularModule from './isAngularModule';
+import isNgModule from './isNgModule';
 
 describe('isAngular.ts', () => {
   it('should return false when fileContents is null', () => {
-    expect(isAngularModule(null)).toBeFalsy();
+    expect(isNgModule(null)).toBeFalsy();
   });
 
   it('should return false when fileContents does not contain @Component or @Module', () => {
-    expect(isAngularModule('test')).toBeFalsy();
+    expect(isNgModule('test')).toBeFalsy();
   });
 
   it('should return true when fileContents contains @Module', () => {
-    expect(isAngularModule('@Module')).toBeTruthy();
+    expect(isNgModule('@Module')).toBeTruthy();
   });
 });

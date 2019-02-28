@@ -1,9 +1,9 @@
-import isAngularComponent from './isAngularComponent';
-import isAngularModule from './isAngularModule';
+import isNgComponent from './isNgComponent';
+import isNgModule from './isNgModule';
 import isReact from './isReact';
 
 export default {
-  isAngularComponent,
-  isAngularModule,
+  isNgComponent,
+  isNgModule,
   isReact
 };
