@@ -10,6 +10,6 @@ describe('isAngular.ts', () => {
   });
 
   it('should return true when fileContents contains @Module', () => {
-    expect(isNgModule('@Module')).toBeTruthy();
+    expect(isNgModule('@NgModule')).toBeTruthy();
   });
 });

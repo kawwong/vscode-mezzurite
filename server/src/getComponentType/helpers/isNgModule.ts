@@ -2,7 +2,7 @@ function isAngularModule (fileContents: string): boolean {
   let isAngularModule = false;
 
   if (fileContents != null) {
-    isAngularModule = fileContents.indexOf('@Module') >= 0;
+    isAngularModule = fileContents.indexOf('@NgModule') >= 0;
   }
 
   return isAngularModule;

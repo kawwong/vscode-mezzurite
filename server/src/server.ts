@@ -11,9 +11,8 @@ import {
 } from 'vscode-languageserver';
 import extractSourceFiles from './filesystem/extractSourceFiles';
 import processFiles from './filesystem/processFiles';
-import findFramework from './find-framework';
-import isInstrumented from './is-instrumented';
 import MezzuriteComponent from './models/mezzuriteComponent';
+import getComponentType from './getComponentType';
 
 // Create a connection for the server. The connection uses Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -24,12 +23,14 @@ const connection = createConnection(ProposedFeatures.all);
 const documents: TextDocuments = new TextDocuments();
 
 const components: {
-  angular: MezzuriteComponent[];
   angularjs: MezzuriteComponent[];
+  ngComponent: MezzuriteComponent[];
+  ngModule: MezzuriteComponent[];
   react: MezzuriteComponent[];
 } = {
-  angular: [],
   angularjs: [],
+  ngComponent: [],
+  ngModule: [],
   react: []
 };
 
@@ -50,13 +51,13 @@ connection.onInitialized(() => {
     // TODO: Make this work for multiple folders.
     const files = extractSourceFiles(folders[0].uri);
     processFiles(files, (fileData: string, filePath: string) => {
-      const framework = findFramework(fileData);
-      if (framework != null) {
-        const component = isInstrumented(filePath, framework);
-        components[framework].push(component);
+      const componentType = getComponentType(fileData);
+      if (componentType != null) {
+        components[componentType].push(filePath);
       }
     }).then(() => {
-      connection.console.log(JSON.stringify(components.angular));
+      connection.console.log(JSON.stringify(components.ngComponent));
+      connection.console.log(JSON.stringify(components.ngModule));
       connection.console.log(JSON.stringify(components.react));
     });
   });
