@@ -1,9 +1,9 @@
+const globby = require('globby');
 import extractSourceFiles from './extractSourceFiles';
-import globby = require('globby');
 
 describe('extractSourceFiles.ts', () => {
   beforeAll(() => {
-    jest.spyOn(globby, 'sync');
+    globby.sync = jest.fn();
   });
 
   afterEach(() => {
