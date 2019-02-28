@@ -1,5 +1,6 @@
 import { TreeItem, TreeItemCollapsibleState } from 'vscode';
 import MezzuriteComponent from './MezzuriteComponent';
+import ConditionTreeItem from './ConditionTreeItem';
 
 class MezzuriteTreeItem extends TreeItem {
   public label: string;
@@ -8,7 +9,7 @@ class MezzuriteTreeItem extends TreeItem {
     private component: MezzuriteComponent
   ) {
     super(component.filePath, TreeItemCollapsibleState.Collapsed);
-    this.label = component.filePath;
+    this.label = component.name;
   }
 
   get description (): string {
@@ -19,7 +20,12 @@ class MezzuriteTreeItem extends TreeItem {
     return this.component.filePath;
   }
 
-  contextValue = 'dependency';
+  get children (): TreeItem[] {
+    return Object.keys(this.component.checks)
+    .map((check) => {
+      return new ConditionTreeItem(this.component.checks[check], check);
+    });
+  }
 }
 
 export default MezzuriteTreeItem;

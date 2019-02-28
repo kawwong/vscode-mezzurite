@@ -3,6 +3,7 @@ interface MezzuriteComponent {
     [key: string]: boolean;
   };
   filePath: string;
+  name: string;
   type: string;
 }
 

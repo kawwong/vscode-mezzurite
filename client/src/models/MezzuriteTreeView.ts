@@ -1,20 +1,26 @@
-import { TreeDataProvider, TreeItem, EventEmitter, Event, TreeItemCollapsibleState } from 'vscode';
+import { TreeDataProvider, TreeItem, EventEmitter, Event } from 'vscode';
 import MezzuriteComponent from './MezzuriteComponent';
 import MezzuriteTreeItem from './MezzuriteTreeItem';
 
-class MezzuriteTreeView implements TreeDataProvider<MezzuriteTreeItem> {
-  private _onDidChangeTreeData: EventEmitter<MezzuriteTreeItem> = new EventEmitter<MezzuriteTreeItem>();
-  readonly onDidChangeTreeData: Event<MezzuriteTreeItem> = this._onDidChangeTreeData.event;
+class MezzuriteTreeView implements TreeDataProvider<TreeItem> {
+  private _onDidChangeTreeData: EventEmitter<TreeItem> = new EventEmitter<TreeItem>();
+  readonly onDidChangeTreeData: Event<TreeItem> = this._onDidChangeTreeData.event;
 
   constructor (private components: MezzuriteComponent[]) {}
 
-  getChildren (): Thenable<MezzuriteTreeItem[]> {
-    return new Promise((resolve) => {
-      resolve(this.components.map((component: MezzuriteComponent) => new MezzuriteTreeItem(component)));
-    });
+  getChildren (element: MezzuriteTreeItem): Thenable<TreeItem[]> {
+    if (element == null) {
+      return new Promise((resolve) => {
+        resolve(this.components.map((component: MezzuriteComponent) => new MezzuriteTreeItem(component)));
+      });
+    } else {
+      return new Promise((resolve) => {
+        resolve(element.children);
+      });
+    }
   }
 
-  getTreeItem (element: TreeItem): TreeItem {
+  getTreeItem (element: MezzuriteTreeItem): TreeItem {
     return element;
   }
 
