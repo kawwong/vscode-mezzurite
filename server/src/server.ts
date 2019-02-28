@@ -23,6 +23,16 @@ const connection = createConnection(ProposedFeatures.all);
 // supports full document sync only
 const documents: TextDocuments = new TextDocuments();
 
+const components: {
+  angular: MezzuriteComponent[];
+  angularjs: MezzuriteComponent[];
+  react: MezzuriteComponent[];
+} = {
+  angular: [],
+  angularjs: [],
+  react: []
+};
+
 connection.onInitialize(() => {
   return {
     capabilities: {
@@ -39,26 +49,22 @@ connection.onInitialized(() => {
   connection.workspace.getWorkspaceFolders().then((folders: WorkspaceFolder[]) => {
     // TODO: Make this work for multiple folders.
     const files = extractSourceFiles(folders[0].uri);
-    const types: {
-      angular: MezzuriteComponent[];
-      angularjs: MezzuriteComponent[];
-      react: MezzuriteComponent[];
-    } = {
-      angular: [],
-      angularjs: [],
-      react: []
-    };
     processFiles(files, (fileData: string, filePath: string) => {
       const framework = findFramework(fileData);
       if (framework != null) {
         const component = isInstrumented(filePath, framework);
-        types[framework].push(component);
+        components[framework].push(component);
       }
     }).then(() => {
-      connection.console.log(JSON.stringify(types.angular));
-      connection.console.log(JSON.stringify(types.react));
+      connection.console.log(JSON.stringify(components.angular));
+      connection.console.log(JSON.stringify(components.react));
     });
   });
+});
+
+connection.onRequest('custom/clientInitialized', () => {
+  connection.console.log('got request');
+  // connection.sendNotification('custom/mezzuriteComponents', components.angular);
 });
 
 // connection.onDidChangeConfiguration(change => false);

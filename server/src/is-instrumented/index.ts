@@ -9,6 +9,7 @@ function isInstrumented (filePath: string, framework: string): MezzuriteComponen
         hasImport: true
       },
       filePath,
+      name: 'componentName',
       type: framework
     };
   }
