@@ -6,12 +6,12 @@ class MezzuriteTreeView implements TreeDataProvider<TreeItem> {
   private _onDidChangeTreeData: EventEmitter<TreeItem> = new EventEmitter<TreeItem>();
   readonly onDidChangeTreeData: Event<TreeItem> = this._onDidChangeTreeData.event;
 
-  constructor (private components: MezzuriteComponent[]) {}
+  constructor (private components: MezzuriteComponent[], private rootPath: string) {}
 
   getChildren (element: MezzuriteTreeItem): Thenable<TreeItem[]> {
     if (element == null) {
       return new Promise((resolve) => {
-        resolve(this.components.map((component: MezzuriteComponent) => new MezzuriteTreeItem(component)));
+        resolve(this.components.map((component: MezzuriteComponent) => new MezzuriteTreeItem(component, this.rootPath)));
       });
     } else {
       return new Promise((resolve) => {

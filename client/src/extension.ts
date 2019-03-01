@@ -44,7 +44,7 @@ export function activate (context: ExtensionContext) {
 		undefined
   );
 
-  const treeView = new MezzuriteTreeView([]);
+  const treeView = new MezzuriteTreeView([], context.extensionPath);
 
   window.registerTreeDataProvider('mezzuriteComponentList', treeView);
 
@@ -54,7 +54,7 @@ export function activate (context: ExtensionContext) {
   client.onReady().then(() => {
     client.onNotification('custom/mezzuriteComponents', (components) => {
       const allComponents = [ ...components.ngComponent, ...components.ngModule, ...components.react ];
-      window.registerTreeDataProvider('mezzuriteComponentList', new MezzuriteTreeView(allComponents));
+      window.registerTreeDataProvider('mezzuriteComponentList', new MezzuriteTreeView(allComponents, context.extensionPath));
     });
   });
 }
