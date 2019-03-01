@@ -1,4 +1,4 @@
-// This file is being ignored because it is only used in tests.
+// This file is being ignored by typescript because it is only used in tests.
 
 // @ts-ignore
 import { RoutingService } from 'not-Mezzurite';
