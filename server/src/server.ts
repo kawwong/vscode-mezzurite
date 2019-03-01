@@ -54,19 +54,15 @@ connection.onInitialized(() => {
     processFiles(files, (fileData: string, filePath: string) => {
       const componentType = getComponentType(fileData);
       if (componentType != null) {
-        components[componentType].push(generateComponent(componentType, filePath));
+        const componentData = (generateComponent(componentType, filePath));
+        if (componentData != null) {
+          components[componentType].push(componentData);
+        }
       }
     }).then(() => {
-      connection.console.log(JSON.stringify(components.ngComponent));
-      connection.console.log(JSON.stringify(components.ngModule));
-      connection.console.log(JSON.stringify(components.react));
+      connection.sendNotification('custom/mezzuriteComponents', components);
     });
   });
-});
-
-connection.onRequest('custom/clientInitialized', () => {
-  connection.console.log('got request');
-  // connection.sendNotification('custom/mezzuriteComponents', components.angular);
 });
 
 // connection.onDidChangeConfiguration(change => false);

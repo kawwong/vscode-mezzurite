@@ -12,6 +12,7 @@ import {
 	TransportKind
 } from 'vscode-languageclient';
 import MezzuriteTreeView from './models/MezzuriteTreeView';
+import MezzuriteComponent from './models/MezzuriteComponent';
 
 let client: LanguageClient;
 
@@ -49,6 +50,13 @@ export function activate (context: ExtensionContext) {
 
 	// Start the client. This will also launch the server
   client.start();
+
+  client.onReady().then(() => {
+    client.onNotification('custom/mezzuriteComponents', (components) => {
+      const allComponents = [ ...components.ngComponent, ...components.ngModule, ...components.react ];
+      window.registerTreeDataProvider('mezzuriteComponentList', new MezzuriteTreeView(allComponents));
+    });
+  });
 }
 
 export function deactivate (): Thenable<void> | undefined {
