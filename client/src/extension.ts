@@ -12,7 +12,6 @@ import {
 	TransportKind
 } from 'vscode-languageclient';
 import MezzuriteTreeView from './models/MezzuriteTreeView';
-import MezzuriteComponent from './models/MezzuriteComponent';
 
 let client: LanguageClient;
 

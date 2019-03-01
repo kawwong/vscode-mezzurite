@@ -16,7 +16,7 @@ class MezzuriteTreeItem extends TreeItem {
     this.fulfilled = Object.keys(this.component.checks)
     .map((key: string) => this.component.checks[key])
     .reduce((previousValue: boolean, currentValue: boolean) => {
-      return previousValue || currentValue;
+      return previousValue && currentValue;
     });
   }
 
