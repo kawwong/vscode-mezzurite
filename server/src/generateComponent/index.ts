@@ -9,6 +9,8 @@ function generateComponent (componentType: string, filePath: string): MezzuriteC
       component = helpers.generateNgComponent(filePath);
     } else if (componentType === 'ngModule') {
       component = helpers.generateNgModule(filePath);
+    } else if (componentType === 'react') {
+      component = helpers.generateReact(filePath);
     }
   }
 
