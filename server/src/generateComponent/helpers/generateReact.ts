@@ -28,6 +28,10 @@ function generateReact (filePath: string): MezzuriteComponent {
           name = withMezzuriteNode.getNextSiblings().find((sibling: Node) => {
             return sibling.getKind() === SyntaxKind.SyntaxList;
           }).getText();
+        } else {
+          const wrappedNode = exportContents.getLastChildByKind(SyntaxKind.SyntaxList);
+
+          name = wrappedNode.getText();
         }
       }
 
