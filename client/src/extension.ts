@@ -62,6 +62,10 @@ export function activate (context: ExtensionContext) {
   fileWatcher.onDidChange((event: Uri) => {
     client.sendNotification('custom/fileChanged', event.fsPath);
   });
+
+  fileWatcher.onDidDelete((event: Uri) => {
+    client.sendNotification('custom/fileDeleted', event.fsPath);
+  });
 }
 
 export function deactivate (): Thenable<void> | undefined {

@@ -70,6 +70,14 @@ connection.onNotification('custom/fileChanged', (filePath: string) => {
   });
 });
 
+connection.onNotification('custom/fileDeleted', (filePath: string) => {
+  components = components.filter((component: MezzuriteComponent) => {
+    return join(component.filePath) !== join(filePath);
+  });
+
+  connection.sendNotification('custom/mezzuriteComponents', { value: components });
+});
+
 // connection.onDidChangeConfiguration(change => false);
 
 // Only keep settings for open documents
