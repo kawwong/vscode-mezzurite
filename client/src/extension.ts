@@ -4,7 +4,7 @@
  * ------------------------------------------------------------------------------------------ */
 
 import * as path from 'path';
-import { ExtensionContext, window, workspace, Uri, TreeViewSelectionChangeEvent, TreeItem, TextDocument, TreeViewExpansionEvent } from 'vscode';
+import { ExtensionContext, window, workspace, Uri, TextDocument, TreeViewExpansionEvent } from 'vscode';
 import {
 	LanguageClient,
 	ServerOptions,
