@@ -1,15 +1,25 @@
 import { join } from 'path';
+import Project from 'ts-morph';
 
 import generateNgComponent from './generateNgComponent';
 
 describe('generateNgComponent.ts', () => {
+  const project = new Project({
+    addFilesFromTsConfig: false
+  });
+
   it('should return null when filePath is null', () => {
-    expect(generateNgComponent(null)).toBeNull();
+    expect(generateNgComponent(null, null)).toBeNull();
+  });
+
+  it('should return null when sourceFile is null', () => {
+    expect(generateNgComponent('filePath', null)).toBeNull();
   });
 
   it('should generate a Mezzurite component from an ngModule file passing all the checks', () => {
     const filePath = join('.', 'server', 'src', 'generateComponent', 'helpers', '__mocks__', 'ngComponentInstrumented.ts');
-    expect(generateNgComponent(filePath))
+    const sourceFile = project.addExistingSourceFile(filePath);
+    expect(generateNgComponent(filePath, sourceFile))
       .toMatchObject({
         checks: {
           hasMezzuriteDirective: true
@@ -18,11 +28,13 @@ describe('generateNgComponent.ts', () => {
         name: 'InstrumentedComponent',
         type: 'ngComponent'
       });
+    project.removeSourceFile(sourceFile);
   });
 
   it('should generate a Mezzurite component from an ngModule file not passing all the checks', () => {
     const filePath = join('.', 'server', 'src', 'generateComponent', 'helpers', '__mocks__', 'ngComponentNotInstrumented.ts');
-    expect(generateNgComponent(filePath))
+    const sourceFile = project.addExistingSourceFile(filePath);
+    expect(generateNgComponent(filePath, sourceFile))
       .toMatchObject({
         checks: {
           hasMezzuriteDirective: false
@@ -31,11 +43,13 @@ describe('generateNgComponent.ts', () => {
         name: 'NotInstrumentedComponent',
         type: 'ngComponent'
       });
+    project.removeSourceFile(sourceFile);
   });
 
   it('should generate a Mezzurite component from an ngModule file using templateUrl passing all the checks', () => {
     const filePath = join('.', 'server', 'src', 'generateComponent', 'helpers', '__mocks__', 'ngComponentTemplateUrlInstrumented.ts');
-    expect(generateNgComponent(filePath))
+    const sourceFile = project.addExistingSourceFile(filePath);
+    expect(generateNgComponent(filePath, sourceFile))
       .toMatchObject({
         checks: {
           hasMezzuriteDirective: true
@@ -44,11 +58,13 @@ describe('generateNgComponent.ts', () => {
         name: 'TemplateUrlInstrumentedComponent',
         type: 'ngComponent'
       });
+    project.removeSourceFile(sourceFile);
   });
 
   it('should generate a Mezzurite component from an ngModule file using templateUrl not passing all the checks', () => {
     const filePath = join('.', 'server', 'src', 'generateComponent', 'helpers', '__mocks__', 'ngComponentTemplateUrlNotInstrumented.ts');
-    expect(generateNgComponent(filePath))
+    const sourceFile = project.addExistingSourceFile(filePath);
+    expect(generateNgComponent(filePath, sourceFile))
       .toMatchObject({
         checks: {
           hasMezzuriteDirective: false
@@ -57,5 +73,6 @@ describe('generateNgComponent.ts', () => {
         name: 'TemplateUrlInstrumentedComponent',
         type: 'ngComponent'
       });
+    project.removeSourceFile(sourceFile);
   });
 });

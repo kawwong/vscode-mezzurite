@@ -1,18 +1,13 @@
-import { Project, ClassDeclaration, Node, SyntaxKind, StringLiteral } from 'ts-morph';
+import { ClassDeclaration, Node, SyntaxKind, SourceFile } from 'ts-morph';
 
 import MezzuriteComponent from '../../models/mezzuriteComponent';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
-function generateNgComponent (filePath: string): MezzuriteComponent {
+function generateNgComponent (filePath: string, sourceFile: SourceFile): MezzuriteComponent {
   let component = null;
 
-  if (filePath != null) {
-    const project = new Project({
-      addFilesFromTsConfig: false
-    });
-
-    const sourceFile = project.addExistingSourceFile(filePath);
+  if (filePath != null && sourceFile != null) {
     // TODO: Handle multiple classes in a file.
     const sourceClass = sourceFile.getClasses()[0];
 

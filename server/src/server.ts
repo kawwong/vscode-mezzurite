@@ -14,6 +14,7 @@ import processFiles from './filesystem/processFiles';
 import MezzuriteComponent from './models/mezzuriteComponent';
 import getComponentType from './getComponentType';
 import generateComponent from './generateComponent';
+import Project from 'ts-morph';
 
 // Create a connection for the server. The connection uses Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -51,10 +52,15 @@ connection.onInitialized(() => {
   connection.workspace.getWorkspaceFolders().then((folders: WorkspaceFolder[]) => {
     // TODO: Make this work for multiple folders.
     const files = extractSourceFiles(folders[0].uri);
+    const project = new Project({
+      addFilesFromTsConfig: false
+    });
     processFiles(files, (fileData: string, filePath: string) => {
       const componentType = getComponentType(fileData);
       if (componentType != null) {
-        const componentData = (generateComponent(componentType, filePath));
+        const sourceFile = project.addExistingSourceFile(filePath);
+        const componentData = generateComponent(componentType, filePath, sourceFile);
+        project.removeSourceFile(sourceFile);
         if (componentData != null) {
           components[componentType].push(componentData);
         }

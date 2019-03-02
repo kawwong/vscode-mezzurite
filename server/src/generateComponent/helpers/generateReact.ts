@@ -2,16 +2,10 @@ import { Project, ClassDeclaration, Node, SyntaxKind, SourceFile } from 'ts-morp
 
 import MezzuriteComponent from '../../models/mezzuriteComponent';
 
-function generateReact (filePath: string): MezzuriteComponent {
+function generateReact (filePath: string, sourceFile: SourceFile): MezzuriteComponent {
   let component = null;
 
-  if (filePath != null) {
-    const project = new Project({
-      addFilesFromTsConfig: false
-    });
-
-    const sourceFile = project.addExistingSourceFile(filePath);
-
+  if (filePath != null && sourceFile != null) {
     const exportContents = getExportContents(sourceFile);
 
     if (exportContents != null) {

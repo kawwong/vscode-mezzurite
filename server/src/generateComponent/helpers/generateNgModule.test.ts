@@ -1,15 +1,25 @@
 import { join } from 'path';
+import Project from 'ts-morph';
 
 import generateNgModule from './generateNgModule';
 
 describe('generateNgModule.ts', () => {
+  const project = new Project({
+    addFilesFromTsConfig: false
+  });
+
   it('should return null when filePath is null', () => {
-    expect(generateNgModule(null)).toBeNull();
+    expect(generateNgModule(null, null)).toBeNull();
+  });
+
+  it('should return null when sourceFile is null', () => {
+    expect(generateNgModule('filePath', null)).toBeNull();
   });
 
   it('should generate a Mezzurite component from an ngModule file passing all the checks', () => {
     const filePath = join('.', 'server', 'src', 'generateComponent', 'helpers', '__mocks__', 'ngModuleInstrumented.ts');
-    expect(generateNgModule(filePath))
+    const sourceFile = project.addExistingSourceFile(filePath);
+    expect(generateNgModule(filePath, sourceFile))
       .toMatchObject({
         checks: {
           hasAngularPerfModule: true,
@@ -20,11 +30,13 @@ describe('generateNgModule.ts', () => {
         name: 'InstrumentedModule',
         type: 'ngModule'
       });
+    project.removeSourceFile(sourceFile);
   });
 
   it('should generate a Mezzurite component from an ngModule file passing none of the checks', () => {
     const filePath = join('.', 'server', 'src', 'generateComponent', 'helpers', '__mocks__', 'ngModuleNotInstrumented.ts');
-    expect(generateNgModule(filePath))
+    const sourceFile = project.addExistingSourceFile(filePath);
+    expect(generateNgModule(filePath, sourceFile))
       .toMatchObject({
         checks: {
           hasAngularPerfModule: false,
@@ -35,5 +47,6 @@ describe('generateNgModule.ts', () => {
         name: 'NotInstrumentedModule',
         type: 'ngModule'
       });
+    project.removeSourceFile(sourceFile);
   });
 });

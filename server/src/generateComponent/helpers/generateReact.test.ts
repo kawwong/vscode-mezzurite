@@ -1,11 +1,17 @@
 import { join } from 'path';
+import Project from 'ts-morph';
 
 import generateReact from './generateReact';
 
 describe('generateReact.ts', () => {
+  const project = new Project({
+    addFilesFromTsConfig: false
+  });
+
   it('should generate a Mezzurite component for a react component written in javascript', () => {
     const filePath = join('.', 'server', 'src', 'generateComponent', 'helpers', '__mocks__', 'reactInstrumentedJs.js');
-    expect(generateReact(filePath))
+    const sourceFile = project.addExistingSourceFile(filePath);
+    expect(generateReact(filePath, sourceFile))
       .toMatchObject({
         checks: {
           hasWithMezzurite: true
@@ -18,7 +24,8 @@ describe('generateReact.ts', () => {
 
   it('should generate a Mezzurite component for a react component written in jsx', () => {
     const filePath = join('.', 'server', 'src', 'generateComponent', 'helpers', '__mocks__', 'reactInstrumentedJsx.jsx');
-    expect(generateReact(filePath))
+    const sourceFile = project.addExistingSourceFile(filePath);
+    expect(generateReact(filePath, sourceFile))
       .toMatchObject({
         checks: {
           hasWithMezzurite: true
@@ -27,11 +34,13 @@ describe('generateReact.ts', () => {
         name: 'ReactInstrumented',
         type: 'react'
       });
+    project.removeSourceFile(sourceFile);
   });
 
   it('should generate a Mezzurite component for a react component written in typescript', () => {
     const filePath = join('.', 'server', 'src', 'generateComponent', 'helpers', '__mocks__', 'reactInstrumentedTs.ts');
-    expect(generateReact(filePath))
+    const sourceFile = project.addExistingSourceFile(filePath);
+    expect(generateReact(filePath, sourceFile))
       .toMatchObject({
         checks: {
           hasWithMezzurite: true
@@ -40,11 +49,13 @@ describe('generateReact.ts', () => {
         name: 'ReactInstrumented',
         type: 'react'
       });
+    project.removeSourceFile(sourceFile);
   });
 
   it('should generate a Mezzurite component for a react component written in tsx', () => {
     const filePath = join('.', 'server', 'src', 'generateComponent', 'helpers', '__mocks__', 'reactInstrumentedTsx.tsx');
-    expect(generateReact(filePath))
+    const sourceFile = project.addExistingSourceFile(filePath);
+    expect(generateReact(filePath, sourceFile))
       .toMatchObject({
         checks: {
           hasWithMezzurite: true
@@ -53,11 +64,13 @@ describe('generateReact.ts', () => {
         name: 'ReactInstrumented',
         type: 'react'
       });
+    project.removeSourceFile(sourceFile);
   });
 
   it('should generate a Mezzurite component for a react component that has not been instrumented', () => {
     const filePath = join('.', 'server', 'src', 'generateComponent', 'helpers', '__mocks__', 'reactNotInstrumented.js');
-    expect(generateReact(filePath))
+    const sourceFile = project.addExistingSourceFile(filePath);
+    expect(generateReact(filePath, sourceFile))
       .toMatchObject({
         checks: {
           hasWithMezzurite: false
@@ -66,11 +79,13 @@ describe('generateReact.ts', () => {
         name: 'ReactNotInstrumented',
         type: 'react'
       });
+    project.removeSourceFile(sourceFile);
   });
 
   it('should generate a Mezzurite component for a react redux component', () => {
     const filePath = join('.', 'server', 'src', 'generateComponent', 'helpers', '__mocks__', 'reactRedux.js');
-    expect(generateReact(filePath))
+    const sourceFile = project.addExistingSourceFile(filePath);
+    expect(generateReact(filePath, sourceFile))
       .toMatchObject({
         checks: {
           hasWithMezzurite: false
@@ -79,5 +94,6 @@ describe('generateReact.ts', () => {
         name: 'ReactRedux',
         type: 'react'
       });
+    project.removeSourceFile(sourceFile);
   });
 });
