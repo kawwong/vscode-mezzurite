@@ -3,18 +3,17 @@
  * Licensed under the MIT License. See License.txt in the project root for license information.
  * ------------------------------------------------------------------------------------------ */
 
+import { join } from 'path';
+import Project from 'ts-morph';
 import {
 	createConnection,
 	TextDocuments,
 	ProposedFeatures,
   WorkspaceFolder
 } from 'vscode-languageserver';
-import extractSourceFiles from './filesystem/extractSourceFiles';
-import processFiles from './filesystem/processFiles';
 import MezzuriteComponent from './models/mezzuriteComponent';
-import getComponentType from './getComponentType';
-import generateComponent from './generateComponent';
-import Project from 'ts-morph';
+import combineWorkspaceFolders from './utilities/combineWorkspaceFolders';
+import processFile from './filesystem/processFile';
 
 // Create a connection for the server. The connection uses Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -24,17 +23,11 @@ const connection = createConnection(ProposedFeatures.all);
 // supports full document sync only
 const documents: TextDocuments = new TextDocuments();
 
-const components: {
-  angularjs: MezzuriteComponent[];
-  ngComponent: MezzuriteComponent[];
-  ngModule: MezzuriteComponent[];
-  react: MezzuriteComponent[];
-} = {
-  angularjs: [],
-  ngComponent: [],
-  ngModule: [],
-  react: []
-};
+let components: MezzuriteComponent[] = [];
+
+const project = new Project({
+  addFilesFromTsConfig: false
+});
 
 connection.onInitialize(() => {
   return {
@@ -50,24 +43,30 @@ connection.onInitialize(() => {
 
 connection.onInitialized(() => {
   connection.workspace.getWorkspaceFolders().then((folders: WorkspaceFolder[]) => {
-    // TODO: Make this work for multiple folders.
-    const files = extractSourceFiles(folders[0].uri);
-    const project = new Project({
-      addFilesFromTsConfig: false
+    const files = combineWorkspaceFolders(folders);
+    Promise.all(
+      files.map((filePath: string) => processFile(filePath, project))
+    )
+    .then((results: MezzuriteComponent[]) => {
+      components = results.filter((component: MezzuriteComponent) => component != null);
+      connection.sendNotification('custom/mezzuriteComponents', { value: components });
     });
-    processFiles(files, (fileData: string, filePath: string) => {
-      const componentType = getComponentType(fileData);
-      if (componentType != null) {
-        const sourceFile = project.addExistingSourceFile(filePath);
-        const componentData = generateComponent(componentType, filePath, sourceFile);
-        project.removeSourceFile(sourceFile);
-        if (componentData != null) {
-          components[componentType].push(componentData);
+  });
+});
+
+connection.onNotification('custom/fileChanged', (filePath: string) => {
+  processFile(filePath, project).then((changedComponent: MezzuriteComponent) => {
+    if (changedComponent != null) {
+      components = components.map((component: MezzuriteComponent) => {
+        if (join(changedComponent.filePath) === join(component.filePath)) {
+          return changedComponent;
+        } else {
+          return component;
         }
-      }
-    }).then(() => {
-      connection.sendNotification('custom/mezzuriteComponents', components);
-    });
+      });
+
+      connection.sendNotification('custom/mezzuriteComponents', { value: components });
+    }
   });
 });
 

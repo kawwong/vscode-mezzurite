@@ -1,4 +1,4 @@
-import { Project, ClassDeclaration, Node, SyntaxKind, SourceFile } from 'ts-morph';
+import { ClassDeclaration, Node, SyntaxKind, SourceFile } from 'ts-morph';
 
 import MezzuriteComponent from '../../models/mezzuriteComponent';
 

@@ -4,14 +4,15 @@
  * ------------------------------------------------------------------------------------------ */
 
 import * as path from 'path';
-import { ExtensionContext, window } from 'vscode';
-
+import { ExtensionContext, window, workspace, Uri } from 'vscode';
 import {
 	LanguageClient,
 	ServerOptions,
 	TransportKind
 } from 'vscode-languageclient';
 import MezzuriteTreeView from './models/MezzuriteTreeView';
+
+import MezzuriteComponent from './models/MezzuriteComponent';
 
 let client: LanguageClient;
 
@@ -51,10 +52,15 @@ export function activate (context: ExtensionContext) {
   client.start();
 
   client.onReady().then(() => {
-    client.onNotification('custom/mezzuriteComponents', (components) => {
-      const allComponents = [ ...components.ngComponent, ...components.ngModule, ...components.react ];
-      window.registerTreeDataProvider('mezzuriteComponentList', new MezzuriteTreeView(allComponents, context.extensionPath));
+    client.onNotification('custom/mezzuriteComponents', (message: { value: MezzuriteComponent[] }) => {
+      window.registerTreeDataProvider('mezzuriteComponentList', new MezzuriteTreeView(message.value, context.extensionPath));
     });
+  });
+
+  const fileWatcher = workspace.createFileSystemWatcher('**/*.{ts,js,tsx,jsx}', false, false, false);
+
+  fileWatcher.onDidChange((event: Uri) => {
+    client.sendNotification('custom/fileChanged', event.fsPath);
   });
 }
 

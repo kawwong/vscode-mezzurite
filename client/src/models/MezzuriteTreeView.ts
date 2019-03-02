@@ -14,7 +14,9 @@ class MezzuriteTreeView implements TreeDataProvider<TreeItem> {
   getChildren (element: MezzuriteTreeItem): Thenable<TreeItem[]> {
     if (element == null) {
       return new Promise((resolve) => {
-        resolve(this.components.map((component: MezzuriteComponent) => new MezzuriteTreeItem(component, this.rootPath)));
+        resolve(this.components
+          .map((component: MezzuriteComponent) => new MezzuriteTreeItem(component, this.rootPath))
+        );
       });
     } else {
       return new Promise((resolve) => {
