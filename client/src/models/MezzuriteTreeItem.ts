@@ -1,4 +1,4 @@
-import { TreeItem, TreeItemCollapsibleState } from 'vscode';
+import { TreeItem, TreeItemCollapsibleState, Uri } from 'vscode';
 import MezzuriteComponent from './MezzuriteComponent';
 import ConditionTreeItem from './ConditionTreeItem';
 import { join } from 'path';
@@ -38,6 +38,10 @@ class MezzuriteTreeItem extends TreeItem {
   get iconPath (): string {
     const iconKind = this.fulfilled ? '' : 'Light';
     return join(this.rootPath, 'client', 'res', 'icons', `${this.component.type + iconKind}.svg`);
+  }
+
+  get resourceUri (): Uri {
+    return Uri.parse(this.component.filePath);
   }
 
 }

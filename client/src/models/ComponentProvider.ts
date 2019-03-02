@@ -2,7 +2,7 @@ import { TreeDataProvider, TreeItem, EventEmitter, Event } from 'vscode';
 import MezzuriteComponent from './MezzuriteComponent';
 import MezzuriteTreeItem from './MezzuriteTreeItem';
 
-class MezzuriteTreeView implements TreeDataProvider<TreeItem> {
+class ComponentProvider implements TreeDataProvider<TreeItem> {
   private _onDidChangeTreeData: EventEmitter<TreeItem> = new EventEmitter<TreeItem>();
   readonly onDidChangeTreeData: Event<TreeItem> = this._onDidChangeTreeData.event;
 
@@ -34,4 +34,4 @@ class MezzuriteTreeView implements TreeDataProvider<TreeItem> {
   }
 }
 
-export default MezzuriteTreeView;
+export default ComponentProvider;

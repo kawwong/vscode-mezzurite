@@ -4,15 +4,16 @@
  * ------------------------------------------------------------------------------------------ */
 
 import * as path from 'path';
-import { ExtensionContext, window, workspace, Uri } from 'vscode';
+import { ExtensionContext, window, workspace, Uri, TreeViewSelectionChangeEvent, TreeItem, TextDocument, TreeViewExpansionEvent } from 'vscode';
 import {
 	LanguageClient,
 	ServerOptions,
 	TransportKind
 } from 'vscode-languageclient';
-import MezzuriteTreeView from './models/MezzuriteTreeView';
 
 import MezzuriteComponent from './models/MezzuriteComponent';
+import ComponentProvider from './models/ComponentProvider';
+import MezzuriteTreeItem from './models/MezzuriteTreeItem';
 
 let client: LanguageClient;
 
@@ -44,16 +45,36 @@ export function activate (context: ExtensionContext) {
 		undefined
   );
 
-  const treeView = new MezzuriteTreeView([], context.extensionPath);
-
-  window.registerTreeDataProvider('mezzuriteComponentList', treeView);
+  let treeView = window.createTreeView('mezzuriteComponentList', {
+    treeDataProvider: new ComponentProvider([], context.extensionPath)
+  });
 
 	// Start the client. This will also launch the server
   client.start();
 
   client.onReady().then(() => {
     client.onNotification('custom/mezzuriteComponents', (message: { value: MezzuriteComponent[] }) => {
-      window.registerTreeDataProvider('mezzuriteComponentList', new MezzuriteTreeView(message.value, context.extensionPath));
+      treeView = window.createTreeView('mezzuriteComponentList', {
+        treeDataProvider: new ComponentProvider(message.value, context.extensionPath)
+      });
+
+      treeView.onDidCollapseElement((event: TreeViewExpansionEvent<MezzuriteTreeItem>) => {
+        if (event.element.resourceUri != null) {
+          workspace.openTextDocument(event.element.resourceUri.path)
+            .then((document: TextDocument) => {
+              window.showTextDocument(document);
+            });
+        }
+      });
+
+      treeView.onDidExpandElement((event: TreeViewExpansionEvent<MezzuriteTreeItem>) => {
+        if (event.element.resourceUri != null) {
+          workspace.openTextDocument(event.element.resourceUri.path)
+            .then((document: TextDocument) => {
+              window.showTextDocument(document);
+            });
+        }
+      });
     });
   });
 
