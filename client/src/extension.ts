@@ -52,31 +52,33 @@ export function activate (context: ExtensionContext) {
 	// Start the client. This will also launch the server
   client.start();
 
-  client.onReady().then(() => {
-    client.onNotification('custom/mezzuriteComponents', (message: { value: MezzuriteComponent[] }) => {
-      treeView = window.createTreeView('mezzuriteComponentList', {
-        treeDataProvider: new ComponentProvider(message.value, context.extensionPath)
-      });
+  client.onReady()
+    .catch(() => client.info('The client could not be initialized.'))
+    .then(() => {
+      client.onNotification('custom/mezzuriteComponents', (message: { value: MezzuriteComponent[] }) => {
+        treeView = window.createTreeView('mezzuriteComponentList', {
+          treeDataProvider: new ComponentProvider(message.value, context.extensionPath)
+        });
 
-      treeView.onDidCollapseElement((event: TreeViewExpansionEvent<MezzuriteTreeItem>) => {
-        if (event.element.resourceUri != null) {
-          workspace.openTextDocument(event.element.resourceUri.path)
-            .then((document: TextDocument) => {
-              window.showTextDocument(document);
-            });
-        }
-      });
+        treeView.onDidCollapseElement((event: TreeViewExpansionEvent<MezzuriteTreeItem>) => {
+          if (event.element.resourceUri != null) {
+            workspace.openTextDocument(event.element.resourceUri.path)
+              .then((document: TextDocument) => {
+                window.showTextDocument(document);
+              });
+          }
+        });
 
-      treeView.onDidExpandElement((event: TreeViewExpansionEvent<MezzuriteTreeItem>) => {
-        if (event.element.resourceUri != null) {
-          workspace.openTextDocument(event.element.resourceUri.path)
-            .then((document: TextDocument) => {
-              window.showTextDocument(document);
-            });
-        }
+        treeView.onDidExpandElement((event: TreeViewExpansionEvent<MezzuriteTreeItem>) => {
+          if (event.element.resourceUri != null) {
+            workspace.openTextDocument(event.element.resourceUri.path)
+              .then((document: TextDocument) => {
+                window.showTextDocument(document);
+              });
+          }
+        });
       });
     });
-  });
 
   const fileWatcher = workspace.createFileSystemWatcher('**/*.{ts,js,tsx,jsx}', false, false, false);
 

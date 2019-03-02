@@ -50,24 +50,27 @@ connection.onInitialized(() => {
     .then((results: MezzuriteComponent[]) => {
       components = results.filter((component: MezzuriteComponent) => component != null);
       connection.sendNotification('custom/mezzuriteComponents', { value: components });
-    });
+    })
+    .catch((error: Error) => connection.console.warn(error.message));
   });
 });
 
 connection.onNotification('custom/fileChanged', (filePath: string) => {
-  processFile(filePath, project).then((changedComponent: MezzuriteComponent) => {
-    if (changedComponent != null) {
-      components = components.map((component: MezzuriteComponent) => {
-        if (join(changedComponent.filePath) === join(component.filePath)) {
-          return changedComponent;
-        } else {
-          return component;
-        }
-      });
+  processFile(filePath, project)
+    .then((changedComponent: MezzuriteComponent) => {
+      if (changedComponent != null) {
+        components = components.map((component: MezzuriteComponent) => {
+          if (join(changedComponent.filePath) === join(component.filePath)) {
+            return changedComponent;
+          } else {
+            return component;
+          }
+        });
 
-      connection.sendNotification('custom/mezzuriteComponents', { value: components });
-    }
-  });
+        connection.sendNotification('custom/mezzuriteComponents', { value: components });
+      }
+    })
+    .catch((error: Error) => connection.console.warn(error.name));
 });
 
 connection.onNotification('custom/fileDeleted', (filePath: string) => {
