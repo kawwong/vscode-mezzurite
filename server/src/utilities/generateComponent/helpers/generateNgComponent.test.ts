@@ -17,7 +17,7 @@ describe('generateNgComponent.ts', () => {
   });
 
   it('should generate a Mezzurite component from an ngModule file passing all the checks', () => {
-    const filePath = join('.', 'server', 'src', 'generateComponent', 'helpers', '__mocks__', 'ngComponentInstrumented.ts');
+    const filePath = join('.', 'server', 'src', 'utilities', 'generateComponent', 'helpers', '__mocks__', 'ngComponentInstrumented.ts');
     const sourceFile = project.addExistingSourceFile(filePath);
     expect(generateNgComponent(filePath, sourceFile))
       .toMatchObject({
@@ -32,7 +32,7 @@ describe('generateNgComponent.ts', () => {
   });
 
   it('should generate a Mezzurite component from an ngModule file not passing all the checks', () => {
-    const filePath = join('.', 'server', 'src', 'generateComponent', 'helpers', '__mocks__', 'ngComponentNotInstrumented.ts');
+    const filePath = join('.', 'server', 'src', 'utilities', 'generateComponent', 'helpers', '__mocks__', 'ngComponentNotInstrumented.ts');
     const sourceFile = project.addExistingSourceFile(filePath);
     expect(generateNgComponent(filePath, sourceFile))
       .toMatchObject({
@@ -47,7 +47,7 @@ describe('generateNgComponent.ts', () => {
   });
 
   it('should generate a Mezzurite component from an ngModule file using templateUrl passing all the checks', () => {
-    const filePath = join('.', 'server', 'src', 'generateComponent', 'helpers', '__mocks__', 'ngComponentTemplateUrlInstrumented.ts');
+    const filePath = join('.', 'server', 'src', 'utilities', 'generateComponent', 'helpers', '__mocks__', 'ngComponentTemplateUrlInstrumented.ts');
     const sourceFile = project.addExistingSourceFile(filePath);
     expect(generateNgComponent(filePath, sourceFile))
       .toMatchObject({
@@ -62,7 +62,7 @@ describe('generateNgComponent.ts', () => {
   });
 
   it('should generate a Mezzurite component from an ngModule file using templateUrl not passing all the checks', () => {
-    const filePath = join('.', 'server', 'src', 'generateComponent', 'helpers', '__mocks__', 'ngComponentTemplateUrlNotInstrumented.ts');
+    const filePath = join('.', 'server', 'src', 'utilities', 'generateComponent', 'helpers', '__mocks__', 'ngComponentTemplateUrlNotInstrumented.ts');
     const sourceFile = project.addExistingSourceFile(filePath);
     expect(generateNgComponent(filePath, sourceFile))
       .toMatchObject({

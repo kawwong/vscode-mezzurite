@@ -1,8 +1,9 @@
+import { join } from 'path';
+import Project from 'ts-morph';
+
+import MezzuriteComponent from '../../models/mezzuriteComponent';
 import generateComponent from '.';
 import helpers from './helpers';
-import MezzuriteComponent from '../models/mezzuriteComponent';
-import Project from 'ts-morph';
-import { join } from 'path';
 
 describe('index.ts', () => {
   const component: MezzuriteComponent = {
@@ -18,7 +19,7 @@ describe('index.ts', () => {
     addFilesFromTsConfig: false
   });
   const sourceFile = project.addExistingSourceFile(
-    join('.', 'server', 'src', 'generateComponent', 'helpers', '__mocks__', 'reactRedux.js')
+    join('.', 'server', 'src', 'utilities', 'generateComponent', 'helpers', '__mocks__', 'reactRedux.js')
   );
 
   afterEach(() => {

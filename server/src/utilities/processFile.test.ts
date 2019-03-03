@@ -16,7 +16,7 @@ describe('processFile.ts', () => {
   });
 
   it('should resolve the promise with the component data', () => {
-    const filePath = join('.', 'server', 'src', 'filesystem', '__mocks__', 'exampleComponent.js');
+    const filePath = join('.', 'server', 'src', 'utilities', '__mocks__', 'exampleComponent.js');
     const result: MezzuriteComponent = {
       checks: {
         isInstrumented: true
@@ -35,7 +35,7 @@ describe('processFile.ts', () => {
   });
 
   it('should resolve the promise with a null value when the component data is null', () => {
-    const filePath = join('.', 'server', 'src', 'filesystem', '__mocks__', 'exampleNotComponent.js');
+    const filePath = join('.', 'server', 'src', 'utilities', '__mocks__', 'exampleNotComponent.js');
     Object.defineProperty(getComponentType, 'default', { value: jest.fn(() => null) });
     return processFile(filePath, project).then((component: MezzuriteComponent) => {
       expect(getComponentType.default).toHaveBeenCalledTimes(1);

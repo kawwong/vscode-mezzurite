@@ -17,7 +17,7 @@ describe('generateNgModule.ts', () => {
   });
 
   it('should generate a Mezzurite component from an ngModule file passing all the checks', () => {
-    const filePath = join('.', 'server', 'src', 'generateComponent', 'helpers', '__mocks__', 'ngModuleInstrumented.ts');
+    const filePath = join('.', 'server', 'src', 'utilities', 'generateComponent', 'helpers', '__mocks__', 'ngModuleInstrumented.ts');
     const sourceFile = project.addExistingSourceFile(filePath);
     expect(generateNgModule(filePath, sourceFile))
       .toMatchObject({
@@ -34,7 +34,7 @@ describe('generateNgModule.ts', () => {
   });
 
   it('should generate a Mezzurite component from an ngModule file passing none of the checks', () => {
-    const filePath = join('.', 'server', 'src', 'generateComponent', 'helpers', '__mocks__', 'ngModuleNotInstrumented.ts');
+    const filePath = join('.', 'server', 'src', 'utilities', 'generateComponent', 'helpers', '__mocks__', 'ngModuleNotInstrumented.ts');
     const sourceFile = project.addExistingSourceFile(filePath);
     expect(generateNgModule(filePath, sourceFile))
       .toMatchObject({
