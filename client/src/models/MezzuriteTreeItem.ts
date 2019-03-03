@@ -1,11 +1,11 @@
 import { TreeItem, TreeItemCollapsibleState, Uri } from 'vscode';
-import MezzuriteComponent from './MezzuriteComponent';
+
+import { generateIconPath, generateDescription, generateFulfilled } from '../utilities/treeItemUtilities';
 import ConditionTreeItem from './ConditionTreeItem';
-import { join } from 'path';
+import MezzuriteComponent from './MezzuriteComponent';
 
 class MezzuriteTreeItem extends TreeItem {
   public label: string;
-  private fulfilled: boolean;
 
   constructor (
     private component: MezzuriteComponent,
@@ -13,19 +13,6 @@ class MezzuriteTreeItem extends TreeItem {
   ) {
     super(component.filePath, TreeItemCollapsibleState.Collapsed);
     this.label = component.name;
-    this.fulfilled = Object.keys(this.component.checks)
-    .map((key: string) => this.component.checks[key])
-    .reduce((previousValue: boolean, currentValue: boolean) => {
-      return previousValue && currentValue;
-    });
-  }
-
-  get description (): string {
-    return this.fulfilled ? 'Tracked' : 'Not tracked';
-  }
-
-  get tooltip (): string {
-    return this.component.filePath;
   }
 
   get children (): TreeItem[] {
@@ -35,9 +22,20 @@ class MezzuriteTreeItem extends TreeItem {
     });
   }
 
+  get description (): string {
+    return generateDescription(this.fulfilled);
+  }
+
+  get fulfilled (): boolean {
+    return generateFulfilled(this.component);
+  }
+
+  get tooltip (): string {
+    return this.component.filePath;
+  }
+
   get iconPath (): string {
-    const iconKind = this.fulfilled ? '' : 'Light';
-    return join(this.rootPath, 'client', 'res', 'icons', `${this.component.type + iconKind}.svg`);
+    return generateIconPath(this.component.type, this.fulfilled, this.rootPath);
   }
 
   get resourceUri (): Uri {
