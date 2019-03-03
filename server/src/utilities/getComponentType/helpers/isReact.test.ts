@@ -16,4 +16,8 @@ describe('isReact.ts', () => {
   it('should return true when fileContents contains the React import last from react', () => {
     expect(isReact(`import { Component }, React from 'react'`)).toBeTruthy();
   });
+
+  it('should return true when fileContents contains the React not last from react', () => {
+    expect(isReact(`import React, { Component } from 'react'`)).toBeTruthy();
+  });
 });
