@@ -1,8 +1,8 @@
-import { ClassDeclaration, Node, SyntaxKind, SourceFile } from 'ts-morph';
-
-import MezzuriteComponent from '../../models/mezzuriteComponent';
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { ClassDeclaration, Node, SyntaxKind, SourceFile } from 'ts-morph';
+
+import MezzuriteComponent from '../../../models/mezzuriteComponent';
 
 function generateNgComponent (filePath: string, sourceFile: SourceFile): MezzuriteComponent {
   let component = null;

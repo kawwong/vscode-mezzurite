@@ -2,8 +2,8 @@ import { join } from 'path';
 import Project from 'ts-morph';
 
 import MezzuriteComponent from '../models/mezzuriteComponent';
-import * as generateComponent from '../generateComponent';
-import * as getComponentType from '../getComponentType';
+import * as generateComponent from './generateComponent';
+import * as getComponentType from './getComponentType';
 import processFile from './processFile';
 
 describe('processFile.ts', () => {

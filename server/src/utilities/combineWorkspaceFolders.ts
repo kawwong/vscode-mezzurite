@@ -1,6 +1,6 @@
 import { WorkspaceFolder } from 'vscode-languageserver';
 
-import extractSourceFiles from '../filesystem/extractSourceFiles';
+import extractSourceFiles from './extractSourceFiles';
 
 function combineWorkspaceFolders (folders: WorkspaceFolder[]): string[] {
   let allFiles: string[] = [];

@@ -2,8 +2,8 @@ import { readFile } from 'fs';
 import Project from 'ts-morph';
 
 import MezzuriteComponent from '../models/mezzuriteComponent';
-import getComponentType from '../getComponentType';
-import generateComponent from '../generateComponent';
+import getComponentType from './getComponentType';
+import generateComponent from './generateComponent';
 
 function processFile (filePath: string, project: Project): Promise<MezzuriteComponent> {
   return new Promise((resolve: Function) => {

@@ -13,7 +13,7 @@ import {
 } from 'vscode-languageserver';
 import MezzuriteComponent from './models/mezzuriteComponent';
 import combineWorkspaceFolders from './utilities/combineWorkspaceFolders';
-import processFile from './filesystem/processFile';
+import processFile from './utilities/processFile';
 
 // Create a connection for the server. The connection uses Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
