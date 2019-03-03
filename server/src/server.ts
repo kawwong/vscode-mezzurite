@@ -14,6 +14,7 @@ import {
 import MezzuriteComponent from './models/mezzuriteComponent';
 import combineWorkspaceFolders from './utilities/combineWorkspaceFolders';
 import processFile from './utilities/processFile';
+import onFileChanged from './events/onFileChanged';
 
 // Create a connection for the server. The connection uses Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -56,21 +57,12 @@ connection.onInitialized(() => {
 });
 
 connection.onNotification('custom/fileChanged', (filePath: string) => {
-  processFile(filePath, project)
-    .then((changedComponent: MezzuriteComponent) => {
-      if (changedComponent != null) {
-        components = components.map((component: MezzuriteComponent) => {
-          if (join(changedComponent.filePath) === join(component.filePath)) {
-            return changedComponent;
-          } else {
-            return component;
-          }
-        });
-
-        connection.sendNotification('custom/mezzuriteComponents', { value: components });
-      }
+  onFileChanged(components, filePath, project)
+    .then((updatedComponents: MezzuriteComponent[]) => {
+      components = updatedComponents;
+      connection.sendNotification('custom/mezzuriteComponents', { value: components });
     })
-    .catch((error: Error) => connection.console.warn(error.name));
+    .catch((error: Error) => console.warn(error.message));
 });
 
 connection.onNotification('custom/fileDeleted', (filePath: string) => {
