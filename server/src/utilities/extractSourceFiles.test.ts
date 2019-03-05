@@ -12,7 +12,7 @@ describe('extractSourceFiles.ts', () => {
 
   it('should not error out', () => {
     extractSourceFiles('test');
-    expect(globby.sync).toHaveBeenLastCalledWith([ `test\\**\\*.+(js|jsx|ts|tsx)`, '!**\node_modules' ]);
+    expect(globby.sync).toHaveBeenLastCalledWith([ `test\\**\\*.+(js|jsx|ts|tsx)`, '!**\\node_modules' ]);
   });
 
   it('should handle a Windows style path', () => {

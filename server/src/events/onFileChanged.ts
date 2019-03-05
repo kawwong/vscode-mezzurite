@@ -9,12 +9,23 @@ function onFileChanged (components: MezzuriteComponent[], filePath: string, proj
   return processFile(filePath, project)
     .then((changedComponent: MezzuriteComponent) => {
       if (changedComponent != null) {
-        updatedComponents = components.map((component: MezzuriteComponent) => {
-          if (join(changedComponent.filePath) === join(component.filePath)) {
-            return changedComponent;
-          } else {
-            return component;
-          }
+        const updateIndex = components.findIndex((component: MezzuriteComponent) => {
+          return join(changedComponent.filePath) === join(component.filePath);
+        });
+        if (updateIndex > -1) {
+          updatedComponents = components.map((component: MezzuriteComponent) => {
+            if (join(changedComponent.filePath) === join(component.filePath)) {
+              return changedComponent;
+            } else {
+              return component;
+            }
+          });
+        } else {
+          updatedComponents = [ ...components, changedComponent ];
+        }
+      } else {
+        updatedComponents = components.filter((component: MezzuriteComponent) => {
+          return join(component.filePath) !== join(filePath);
         });
       }
       return updatedComponents;

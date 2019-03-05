@@ -28,11 +28,20 @@ describe('onFileChanged.ts', () => {
     addFilesFromTsConfig: false
   });
 
-  it('should handle when processFile returns a null value', () => {
+  it('should delete the component with the filePath when processFile returns a null value', () => {
     Object.defineProperty(processFile, 'default', { value: jest.fn(() => new Promise((resolve) => resolve(null))) });
     return onFileChanged(components, 'filePath', project)
       .then((updatedComponents: MezzuriteComponent[]) => [
-        expect(updatedComponents).toBeNull()
+        expect(updatedComponents).toMatchObject([
+          {
+            checks: {
+              test: true
+            },
+            filePath: 'differentFilePath',
+            name: 'name',
+            type: 'componentType'
+          }
+        ])
       ]);
   });
 
@@ -44,7 +53,7 @@ describe('onFileChanged.ts', () => {
       });
   });
 
-  it('should handle when processFile returns a component that already exists', () => {
+  it('should handle when processFile returns a component with new data that already exists', () => {
     const updated: MezzuriteComponent = {
       checks: {
         test: false
@@ -60,7 +69,23 @@ describe('onFileChanged.ts', () => {
       });
   });
 
-  it('should handle when processFile returns a component that already exists', () => {
+  it('should handle when processFile returns a new component', () => {
+    const updated: MezzuriteComponent = {
+      checks: {
+        test: false
+      },
+      filePath: 'newFilePath',
+      name: 'name',
+      type: 'componentType'
+    };
+    Object.defineProperty(processFile, 'default', { value: jest.fn(() => new Promise((resolve) => resolve(updated))) });
+    return onFileChanged(components, 'filePath', project)
+      .then((updatedComponents: MezzuriteComponent[]) => {
+        expect(updatedComponents).toMatchObject([ ...components, updated ]);
+      });
+  });
+
+  it('should handle when processFile throws an error', () => {
     Object.defineProperty(processFile, 'default', { value: jest.fn(() => new Promise((resolve, reject) => reject(new Error('Error')))) });
     expect.assertions(1);
     return onFileChanged(components, 'filePath', project)
