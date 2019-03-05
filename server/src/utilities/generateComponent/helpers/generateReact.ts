@@ -52,13 +52,7 @@ function getExportContents (sourceFile: SourceFile): Node {
         return child.getKind() === SyntaxKind.DefaultKeyword;
       });
 
-      if (defaultKeyword == null) {
-        const exportKeyword = exportAssignment.getChildren().find((child: Node) => {
-          return child.getKind() === SyntaxKind.ExportKeyword;
-        });
-
-        exportContents = exportKeyword.getNextSibling();
-      } else {
+      if (defaultKeyword != null) {
         exportContents = defaultKeyword.getNextSibling();
       }
     }
