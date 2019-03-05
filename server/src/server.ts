@@ -57,7 +57,8 @@ connection.onInitialized(() => {
 });
 
 connection.onNotification('custom/fileChanged', (filePath: string) => {
-  onFileChanged(components, filePath, project)
+  const normalized = filePath.substring(filePath.indexOf(':') + 1);
+  onFileChanged(components, normalized, project)
     .then((updatedComponents: MezzuriteComponent[]) => {
       components = updatedComponents;
       connection.sendNotification('custom/mezzuriteComponents', { value: components });
@@ -66,8 +67,9 @@ connection.onNotification('custom/fileChanged', (filePath: string) => {
 });
 
 connection.onNotification('custom/fileDeleted', (filePath: string) => {
+  const normalized = filePath.substring(filePath.indexOf(':') + 1);
   components = components.filter((component: MezzuriteComponent) => {
-    return join(component.filePath) !== join(filePath);
+    return join(component.filePath) !== join(normalized);
   });
 
   connection.sendNotification('custom/mezzuriteComponents', { value: components });
