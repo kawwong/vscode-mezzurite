@@ -1,4 +1,4 @@
-import { Node, SyntaxKind, SourceFile } from 'ts-morph';
+import { Node, SyntaxKind, SourceFile, SyntaxList, Identifier } from 'ts-morph';
 
 import MezzuriteComponent from '../../../models/mezzuriteComponent';
 
@@ -15,17 +15,15 @@ function generateReact (filePath: string, sourceFile: SourceFile): MezzuriteComp
       if (exportContents.getKind() === SyntaxKind.Identifier) {
         name = exportContents.getText();
       } else {
-        const withMezzuriteNode = exportContents.getFirstChildByKind(SyntaxKind.Identifier);
+        const identifiers = exportContents.getDescendantsOfKind(SyntaxKind.Identifier);
+        const lastIdentifier = identifiers[identifiers.length - 1];
 
-        if (withMezzuriteNode != null) {
+        if (lastIdentifier != null) {
+          name = lastIdentifier.getText();
+        }
+
+        if (exportContents.getText().indexOf('withMezzurite') > -1) {
           hasWithMezzurite = true;
-          name = withMezzuriteNode.getNextSiblings().find((sibling: Node) => {
-            return sibling.getKind() === SyntaxKind.SyntaxList;
-          }).getText();
-        } else {
-          const wrappedNode = exportContents.getLastChildByKind(SyntaxKind.SyntaxList);
-
-          name = wrappedNode.getText();
         }
       }
 
@@ -49,11 +47,20 @@ function getExportContents (sourceFile: SourceFile): Node {
 
   if (fileContents != null) {
     const exportAssignment = fileContents.getFirstChildByKind(SyntaxKind.ExportAssignment);
-
     if (exportAssignment != null) {
-      exportContents = exportAssignment.getChildren().find((child: Node) => {
-        return child.getKind() === SyntaxKind.CallExpression || child.getKind() === SyntaxKind.Identifier;
+      const defaultKeyword = exportAssignment.getChildren().find((child: Node) => {
+        return child.getKind() === SyntaxKind.DefaultKeyword;
       });
+
+      if (defaultKeyword == null) {
+        const exportKeyword = exportAssignment.getChildren().find((child: Node) => {
+          return child.getKind() === SyntaxKind.ExportKeyword;
+        });
+
+        exportContents = exportKeyword.getNextSibling();
+      } else {
+        exportContents = defaultKeyword.getNextSibling();
+      }
     }
   }
 

@@ -96,4 +96,19 @@ describe('generateReact.ts', () => {
       });
     project.removeSourceFile(sourceFile);
   });
+
+  it('should generate a Mezzurite component for a component with parentheses surrounding the export', () => {
+    const filePath = join('.', 'server', 'src', 'utilities', 'generateComponent', 'helpers', '__mocks__', 'reactNotInstrumentedParentheses.js');
+    const sourceFile = project.addExistingSourceFile(filePath);
+    expect(generateReact(filePath, sourceFile))
+      .toMatchObject({
+        checks: {
+          hasWithMezzurite: false
+        },
+        filePath: filePath,
+        name: 'ReactNotInstrumentedParentheses',
+        type: 'react'
+      });
+    project.removeSourceFile(sourceFile);
+  });
 });
