@@ -49,7 +49,7 @@ describe('onFileChanged.ts', () => {
     Object.defineProperty(processFile, 'default', { value: jest.fn(() => new Promise((resolve) => resolve(components[0]))) });
     return onFileChanged(components, 'filePath', project)
       .then((updatedComponents: MezzuriteComponent[]) => {
-        expect(updatedComponents).toMatchObject(components);
+        expect(updatedComponents).toMatchObject([ components[1], components[0] ]);
       });
   });
 
@@ -65,7 +65,7 @@ describe('onFileChanged.ts', () => {
     Object.defineProperty(processFile, 'default', { value: jest.fn(() => new Promise((resolve) => resolve(updated))) });
     return onFileChanged(components, 'filePath', project)
       .then((updatedComponents: MezzuriteComponent[]) => {
-        expect(updatedComponents).toMatchObject([ updated, components[1] ]);
+        expect(updatedComponents).toMatchObject([ components[1], updated ]);
       });
   });
 
@@ -79,7 +79,7 @@ describe('onFileChanged.ts', () => {
       type: 'componentType'
     };
     Object.defineProperty(processFile, 'default', { value: jest.fn(() => new Promise((resolve) => resolve(updated))) });
-    return onFileChanged(components, 'filePath', project)
+    return onFileChanged(components, 'newFilePath', project)
       .then((updatedComponents: MezzuriteComponent[]) => {
         expect(updatedComponents).toMatchObject([ ...components, updated ]);
       });
