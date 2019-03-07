@@ -79,16 +79,6 @@ export function activate (context: ExtensionContext) {
         });
       });
     });
-
-  const fileWatcher = workspace.createFileSystemWatcher('**/*.{ts,js,tsx,jsx}', false, false, false);
-
-  fileWatcher.onDidChange((event: Uri) => {
-    client.sendNotification('custom/fileChanged', event.fsPath);
-  });
-
-  fileWatcher.onDidDelete((event: Uri) => {
-    client.sendNotification('custom/fileDeleted', event.fsPath);
-  });
 }
 
 export function deactivate (): Thenable<void> | undefined {

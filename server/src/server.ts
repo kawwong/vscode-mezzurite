@@ -27,7 +27,7 @@ const connection = createConnection(ProposedFeatures.all);
 // supports full document sync only
 const documents: TextDocuments = new TextDocuments();
 
-let components: MezzuriteComponent[] = [];
+let state: MezzuriteComponent[] = [];
 
 const project = new Project({
   addFilesFromTsConfig: false
@@ -66,10 +66,10 @@ connection.onInitialized(() => {
       });
 
     const onAdd = debounce(() => {
-      onFilesChanged(components, events.map(event => event.path), project)
+      onFilesChanged(state, events.map(event => event.path), project)
         .then((updatedComponents: MezzuriteComponent[]) => {
-          components = updatedComponents;
-          connection.sendNotification('custom/mezzuriteComponents', { value: components });
+          state = updatedComponents;
+          connection.sendNotification('custom/mezzuriteComponents', { value: state });
           events = [];
         });
 
@@ -86,25 +86,6 @@ connection.onInitialized(() => {
   });
 
 });
-
-// connection.onNotification('custom/fileChanged', (filePath: string) => {
-//   const normalized = filePath.substring(filePath.indexOf(':') + 1);
-//   onFileChanged(components, normalized, project)
-//     .then((updatedComponents: MezzuriteComponent[]) => {
-//       components = updatedComponents;
-//       connection.sendNotification('custom/mezzuriteComponents', { value: components });
-//     })
-//     .catch((error: Error) => console.warn(error.message));
-// });
-
-// connection.onNotification('custom/fileDeleted', (filePath: string) => {
-//   const normalized = filePath.substring(filePath.indexOf(':') + 1);
-//   components = components.filter((component: MezzuriteComponent) => {
-//     return join(component.filePath) !== join(normalized);
-//   });
-
-//   connection.sendNotification('custom/mezzuriteComponents', { value: components });
-// });
 
 // Make the text document manager listen on the connection
 // for open, change and close text document events
