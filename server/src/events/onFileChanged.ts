@@ -4,17 +4,24 @@ import Project from 'ts-morph';
 import MezzuriteComponent from '../models/mezzuriteComponent';
 import processFile from '../utilities/processFile';
 
-function onFileChanged (components: MezzuriteComponent[], filePath: string, project: Project): Promise<MezzuriteComponent[]> {
+function onFilesChanged (components: MezzuriteComponent[], filePaths: string[], project: Project): Promise<MezzuriteComponent[]> {
   let updatedComponents: MezzuriteComponent[] = null;
-  return processFile(filePath, project)
-    .then((changedComponent: MezzuriteComponent) => {
+  return Promise.all(
+    filePaths.map((filePath: string) => processFile(filePath, project))
+  )
+    .then((changedComponents: MezzuriteComponent[]) => {
+      const filtered = changedComponents.filter(component => component != null);
       updatedComponents = components.filter((component: MezzuriteComponent) => {
-        return resolve(component.filePath) !== resolve(filePath);
+        return filtered.find((value: MezzuriteComponent) => {
+          return resolve(value.filePath) !== resolve(component.filePath);
+        }) != null;
       });
 
-      if (changedComponent != null) {
-        updatedComponents = [ ...updatedComponents, changedComponent ];
-      }
+      changedComponents.forEach((changedComponent: MezzuriteComponent) => {
+        if (changedComponent != null) {
+          updatedComponents = [ ...updatedComponents, changedComponent ];
+        }
+      });
 
       return updatedComponents;
     })
@@ -23,4 +30,4 @@ function onFileChanged (components: MezzuriteComponent[], filePath: string, proj
     });
 }
 
-export default onFileChanged;
+export default onFilesChanged;

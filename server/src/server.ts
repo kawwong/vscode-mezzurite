@@ -12,9 +12,12 @@ import {
   WorkspaceFolder
 } from 'vscode-languageserver';
 import MezzuriteComponent from './models/mezzuriteComponent';
-import combineWorkspaceFolders from './utilities/combineWorkspaceFolders';
-import processFile from './utilities/processFile';
-import onFileChanged from './events/onFileChanged';
+
+import normalizeWorkspacePath from './utilities/normalizeWorkspacePath';
+import debounce from './utilities/debounce';
+import onFilesChanged from './events/onFileChanged';
+
+const chokidar = require('chokidar');
 
 // Create a connection for the server. The connection uses Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -44,36 +47,64 @@ connection.onInitialize(() => {
 
 connection.onInitialized(() => {
   connection.workspace.getWorkspaceFolders().then((folders: WorkspaceFolder[]) => {
-    const files = combineWorkspaceFolders(folders);
-    Promise.all(
-      files.map((filePath: string) => processFile(filePath, project))
-    )
-    .then((results: MezzuriteComponent[]) => {
-      components = results.filter((component: MezzuriteComponent) => component != null);
-      connection.sendNotification('custom/mezzuriteComponents', { value: components });
-    })
-    .catch((error: Error) => connection.console.warn(error.message));
+    const folderPath = normalizeWorkspacePath(folders[0].uri);
+    let events = [];
+    chokidar
+      .watch(join(folderPath), {
+        ignored: /node_modules/
+      })
+      .on('all', (event, path) => {
+        if (event === 'add' || event === 'unlink' || event === 'change') {
+          if (String(path).endsWith('.js')) {
+            events.push({
+              event,
+              path
+            });
+          }
+        }
+        onAdd();
+      });
+
+    const onAdd = debounce(() => {
+      onFilesChanged(components, events.map(event => event.path), project)
+        .then((updatedComponents: MezzuriteComponent[]) => {
+          components = updatedComponents;
+          connection.sendNotification('custom/mezzuriteComponents', { value: components });
+          events = [];
+        });
+
+    }, 250, false);
+    // const files = combineWorkspaceFolders(folders);
+    // Promise.all(
+    //   files.map((filePath: string) => processFile(filePath, project))
+    // )
+    // .then((results: MezzuriteComponent[]) => {
+    //   components = results.filter((component: MezzuriteComponent) => component != null);
+    //   connection.sendNotification('custom/mezzuriteComponents', { value: components });
+    // })
+    // .catch((error: Error) => connection.console.warn(error.message));
   });
+
 });
 
-connection.onNotification('custom/fileChanged', (filePath: string) => {
-  const normalized = filePath.substring(filePath.indexOf(':') + 1);
-  onFileChanged(components, normalized, project)
-    .then((updatedComponents: MezzuriteComponent[]) => {
-      components = updatedComponents;
-      connection.sendNotification('custom/mezzuriteComponents', { value: components });
-    })
-    .catch((error: Error) => console.warn(error.message));
-});
+// connection.onNotification('custom/fileChanged', (filePath: string) => {
+//   const normalized = filePath.substring(filePath.indexOf(':') + 1);
+//   onFileChanged(components, normalized, project)
+//     .then((updatedComponents: MezzuriteComponent[]) => {
+//       components = updatedComponents;
+//       connection.sendNotification('custom/mezzuriteComponents', { value: components });
+//     })
+//     .catch((error: Error) => console.warn(error.message));
+// });
 
-connection.onNotification('custom/fileDeleted', (filePath: string) => {
-  const normalized = filePath.substring(filePath.indexOf(':') + 1);
-  components = components.filter((component: MezzuriteComponent) => {
-    return join(component.filePath) !== join(normalized);
-  });
+// connection.onNotification('custom/fileDeleted', (filePath: string) => {
+//   const normalized = filePath.substring(filePath.indexOf(':') + 1);
+//   components = components.filter((component: MezzuriteComponent) => {
+//     return join(component.filePath) !== join(normalized);
+//   });
 
-  connection.sendNotification('custom/mezzuriteComponents', { value: components });
-});
+//   connection.sendNotification('custom/mezzuriteComponents', { value: components });
+// });
 
 // Make the text document manager listen on the connection
 // for open, change and close text document events
