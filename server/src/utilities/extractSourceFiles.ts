@@ -3,7 +3,7 @@ import { join } from 'path';
 
 function extractSourceFiles (rootDirectory: string): string[] {
   let normalized = rootDirectory;
-  // TODO: Check if other OSs besides Windows have similar parsing issues.
+
   const colonIndex = normalized.lastIndexOf(':');
   if (colonIndex > -1) {
     normalized = normalized.substring(colonIndex + 1);
